@@ -1,0 +1,557 @@
+{
+  "2024-12-19": [
+    {
+      "title": "Mufasa: The Lion King",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005580.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 58 minutes",
+      "genres": "Adventure,Animation,Drama",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "4:00 PM",
+            "7:00 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "3:15 PM",
+            "5:15 PM",
+            "6:15 PM",
+            "8:30 PM",
+            "9:30 PM",
+            "10:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sonic the Hedgehog 3",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005581.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 49 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "10:00 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "5:00 PM",
+            "6:30 PM",
+            "7:45 PM",
+            "9:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Lord of the Rings: The War of the Rohirrim",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005579.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 14 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "4:30 PM",
+            "7:30 PM",
+            "10:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "National Lampoon's Christmas Vacation",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005720.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "1 hour, 37 minutes",
+      "genres": "Comedy",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "4:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How the Grinch Stole Christmas",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005723.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 44 minutes",
+      "genres": "Comedy,Family,Fantasy",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "5:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "A Christmas Story",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005724.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 34 minutes",
+      "genres": "Comedy,Family",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "3:00 PM",
+            "8:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Kraven The Hunter",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005578.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 7 minutes",
+      "genres": "Action,Adventure,Sci-Fi",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "2:45 PM",
+            "5:45 PM",
+            "8:45 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Moana 2",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005489.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 40 minutes",
+      "genres": "Adventure,Animation,Musical",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "3:15 PM",
+            "6:00 PM",
+            "8:50 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Wicked",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005508.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "2 hours, 40 minutes",
+      "genres": "Fantasy,Musical,Romance",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "4:45 PM",
+            "8:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Gladiator II",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005570.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 28 minutes",
+      "genres": "Action,Adventure,Drama",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "6:45 PM",
+            "10:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Red One",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005571.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 3 minutes",
+      "genres": "Action,Adventure,Comedy",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "2:45 PM"
+          ]
+        }
+      ]
+    }
+  ],
+  "2024-12-20": [
+    {
+      "title": "Mufasa: The Lion King",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005580.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 58 minutes",
+      "genres": "Adventure,Animation,Drama",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "10:30 AM",
+            "1:30 PM",
+            "7:00 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:30 AM",
+            "11:45 AM",
+            "2:30 PM",
+            "3:30 PM",
+            "5:15 PM",
+            "6:30 PM",
+            "8:00 PM",
+            "9:30 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "12:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sonic the Hedgehog 3",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005581.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 49 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "4:15 PM",
+            "9:45 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "10:00 AM",
+            "11:15 AM",
+            "12:50 PM",
+            "2:00 PM",
+            "3:35 PM",
+            "4:45 PM",
+            "6:15 PM",
+            "7:30 PM",
+            "9:00 PM",
+            "10:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Lord of the Rings: The War of the Rohirrim",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005579.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 14 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "11:00 AM",
+            "2:15 PM",
+            "5:30 PM",
+            "8:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Kraven The Hunter",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005578.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 7 minutes",
+      "genres": "Action,Adventure,Sci-Fi",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "10:15 AM",
+            "1:15 PM",
+            "4:15 PM",
+            "7:30 PM",
+            "10:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Moana 2",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005489.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 40 minutes",
+      "genres": "Adventure,Animation,Musical",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:45 AM",
+            "12:15 PM",
+            "2:45 PM",
+            "4:00 PM",
+            "6:45 PM",
+            "9:20 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Wicked",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005508.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "2 hours, 40 minutes",
+      "genres": "Fantasy,Musical,Romance",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "11:30 AM",
+            "3:00 PM",
+            "5:15 PM",
+            "6:30 PM",
+            "8:45 PM",
+            "10:00 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Gladiator II",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005570.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 28 minutes",
+      "genres": "Action,Adventure,Drama",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "6:10 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Red One",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005571.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 3 minutes",
+      "genres": "Action,Adventure,Comedy",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "3:20 PM",
+            "9:25 PM"
+          ]
+        }
+      ]
+    }
+  ],
+  "2024-12-21": [
+    {
+      "title": "Mufasa: The Lion King",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005580.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 58 minutes",
+      "genres": "Adventure,Animation,Drama",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "10:15 AM",
+            "1:15 PM",
+            "7:00 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:30 AM",
+            "11:30 AM",
+            "12:30 PM",
+            "2:30 PM",
+            "5:30 PM",
+            "6:30 PM",
+            "8:45 PM",
+            "9:30 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "3:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sonic the Hedgehog 3",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005581.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 49 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "UltraScreen DLX® + Laser Projection",
+          "times": [
+            "4:15 PM",
+            "9:50 PM"
+          ]
+        },
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:00 AM",
+            "11:15 AM",
+            "11:45 AM",
+            "2:00 PM",
+            "2:45 PM",
+            "4:45 PM",
+            "5:45 PM",
+            "7:30 PM",
+            "8:30 PM",
+            "10:15 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Lord of the Rings: The War of the Rohirrim",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005579.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 14 minutes",
+      "genres": "Action,Adventure,Animation",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:25 AM",
+            "12:40 PM",
+            "3:45 PM",
+            "6:55 PM",
+            "10:30 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Kraven The Hunter",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005578.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 7 minutes",
+      "genres": "Action,Adventure,Sci-Fi",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "10:15 AM",
+            "1:30 PM",
+            "4:35 PM",
+            "7:45 PM",
+            "10:45 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Moana 2",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005489.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "1 hour, 40 minutes",
+      "genres": "Adventure,Animation,Musical",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "9:15 AM",
+            "11:00 AM",
+            "12:00 PM",
+            "1:45 PM",
+            "3:00 PM",
+            "4:30 PM",
+            "7:15 PM",
+            "10:00 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Wicked",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005508.jpg?w=140&h=210",
+      "rating": "PG",
+      "duration": "2 hours, 40 minutes",
+      "genres": "Fantasy,Musical,Romance",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "10:45 AM",
+            "2:15 PM",
+            "5:35 PM",
+            "6:15 PM",
+            "9:15 PM",
+            "10:00 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Gladiator II",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005570.jpg?w=140&h=210",
+      "rating": "R",
+      "duration": "2 hours, 28 minutes",
+      "genres": "Action,Adventure,Drama",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "4:00 PM",
+            "7:20 PM"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Red One",
+      "poster": "https://s3.us-east-1.amazonaws.com/mt-website-prod-contentbucket-1tg1jr7b5zn9a/images/movie-posters/HO00005571.jpg?w=140&h=210",
+      "rating": "PG13",
+      "duration": "2 hours, 3 minutes",
+      "genres": "Action,Adventure,Comedy",
+      "screenings": [
+        {
+          "screen": "DreamLoungers™",
+          "times": [
+            "10:00 AM",
+            "1:00 PM"
+          ]
+        }
+      ]
+    }
+  ]
+}
