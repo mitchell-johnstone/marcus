@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import movieDatabaseJSON from '../lib/movie-data.json';
 import MovieCalendar from '../components/MovieCalendar';
+import OptimizedMovieCalendar from '../components/OptimizedMovieCalendar';
 import { MovieDatabase } from '../types/movie';
 
 const movieDatabase: MovieDatabase = movieDatabaseJSON;
@@ -34,7 +35,7 @@ export default function Home() {
                     >
                         {availableDates.map(date => (
                             <option key={date} value={date}>
-                                {new Date(date).toLocaleDateString('en-US', {
+                                {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
                                     weekday: 'long',
                                     month: 'long',
                                     day: 'numeric'
@@ -47,6 +48,11 @@ export default function Home() {
 
             <div className="container mx-auto px-4 py-8">
                 <MovieCalendar 
+                    selectedDate={selectedDate}
+                    movies={movies}
+                />
+                
+                <OptimizedMovieCalendar 
                     selectedDate={selectedDate}
                     movies={movies}
                 />
@@ -64,7 +70,7 @@ export default function Home() {
                                         <img 
                                             src={movie.poster} 
                                             alt={movie.title}
-                                            className="w-full h-[400px] object-cover"
+                                            className="w-full h-full object-cover"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                     </div>

@@ -12,7 +12,7 @@ async function fetchMovieData() {
 
 	const today = new Date();
 
-	for (let i = 0; i < 3; i++) {
+	for (let i = 0; i < 15; i++) {
 		let date = new Date(today);
 		date.setDate(date.getDate() + i);
 		const dateString = date.toISOString().split('T')[0];

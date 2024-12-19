@@ -1,10 +1,9 @@
-
 import FullCalendar from '@fullcalendar/react';
 // import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { Movie } from '../types/movie';
 import { EventContentArg } from '@fullcalendar/core';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type MovieCalendarProps = {
   selectedDate: string;
@@ -13,6 +12,7 @@ type MovieCalendarProps = {
 
 export default function MovieCalendar({ selectedDate, movies }: MovieCalendarProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
+  const [isCalendarVisible, setIsCalendarVisible] = useState(true);
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -64,21 +64,38 @@ export default function MovieCalendar({ selectedDate, movies }: MovieCalendarPro
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-      <FullCalendar
-        ref={calendarRef}
-        plugins={[timeGridPlugin]}
-        initialView="timeGridDay"
-        initialDate={selectedDate}
-        headerToolbar={false}
-        slotMinTime="09:00:00"
-        slotMaxTime="24:00:00"
-        height="auto"
-        allDaySlot={false}
-        events={events}
-        eventContent={renderEventContent}
-        slotDuration="00:30:00"
-      />
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+      <button 
+        onClick={() => setIsCalendarVisible(!isCalendarVisible)}
+        className="w-full px-6 py-4 text-left flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+      >
+        <h2 className="text-lg font-semibold text-gray-800">Daily Schedule</h2>
+        <svg 
+          className={`w-5 h-5 transform transition-transform ${isCalendarVisible ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      <div className={`transition-all duration-300 ${isCalendarVisible ? 'p-6' : 'h-0 p-0 overflow-hidden'}`}>
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[timeGridPlugin]}
+          initialView="timeGridDay"
+          initialDate={selectedDate}
+          headerToolbar={false}
+          slotMinTime="09:00:00"
+          slotMaxTime="24:00:00"
+          height="auto"
+          allDaySlot={false}
+          events={events}
+          eventContent={renderEventContent}
+          slotDuration="00:30:00"
+        />
+      </div>
     </div>
   );
 }
