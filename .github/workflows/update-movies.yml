@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+        
       - name: Fetch latest movie data
         run: node src/scripts/fetch-movies.js
         
