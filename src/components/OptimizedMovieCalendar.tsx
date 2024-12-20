@@ -3,6 +3,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { Movie } from '../types/movie';
 import { EventContentArg } from '@fullcalendar/core';
 import { useEffect, useRef, useState } from 'react';
+import { useMovieVisibility } from '../contexts/MovieVisibilityContext';
 
 type OptimizedMovieCalendarProps = {
   selectedDate: string;
@@ -12,6 +13,7 @@ type OptimizedMovieCalendarProps = {
 export default function OptimizedMovieCalendar({ selectedDate, movies }: OptimizedMovieCalendarProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
+  const { isMovieVisible } = useMovieVisibility();
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -30,16 +32,18 @@ export default function OptimizedMovieCalendar({ selectedDate, movies }: Optimiz
 
   // Function to optimize movie schedule
   const optimizeSchedule = () => {
-    const allScreenings = movies.flatMap(movie => 
-      movie.screenings.flatMap(screening =>
-        screening.times.map(time => ({
-          movie,
-          screening,
-          time,
-          duration: getMovieDurationInMinutes(movie.duration)
-        }))
-      )
-    );
+    const allScreenings = movies
+      .filter(movie => isMovieVisible(movie.title))
+      .flatMap(movie => 
+        movie.screenings.flatMap(screening =>
+          screening.times.map(time => ({
+            movie,
+            screening,
+            time,
+            duration: getMovieDurationInMinutes(movie.duration)
+          }))
+        )
+      );
 
     // Sort screenings by start time
     allScreenings.sort((a, b) => {

@@ -4,6 +4,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { Movie } from '../types/movie';
 import { EventContentArg } from '@fullcalendar/core';
 import { useEffect, useRef, useState } from 'react';
+import { useMovieVisibility } from '../contexts/MovieVisibilityContext';
 
 type MovieCalendarProps = {
   selectedDate: string;
@@ -13,6 +14,7 @@ type MovieCalendarProps = {
 export default function MovieCalendar({ selectedDate, movies }: MovieCalendarProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
+  const { isMovieVisible } = useMovieVisibility();
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -22,46 +24,48 @@ export default function MovieCalendar({ selectedDate, movies }: MovieCalendarPro
   }, [selectedDate]);
 
   // Convert movie screenings to calendar events
-  const events = movies.flatMap(movie => 
-    movie.screenings.flatMap(screening =>
-      screening.times.map(time => {
-        const [hours, minutes] = time.replace(/\s*(AM|PM)\s*$/i, '').split(':');
-        const isPM = time.toLowerCase().includes('pm');
-        
-        let hour = parseInt(hours);
-        if (isPM && hour !== 12) hour += 12;
-        if (!isPM && hour === 12) hour = 0;
+  const events = movies
+    .filter(movie => isMovieVisible(movie.title))
+    .flatMap(movie => 
+      movie.screenings.flatMap(screening =>
+        screening.times.map(time => {
+          const [hours, minutes] = time.replace(/\s*(AM|PM)\s*$/i, '').split(':');
+          const isPM = time.toLowerCase().includes('pm');
+          
+          let hour = parseInt(hours);
+          if (isPM && hour !== 12) hour += 12;
+          if (!isPM && hour === 12) hour = 0;
 
-        // Create date object from selectedDate string (YYYY-MM-DD)
-        const [year, month, day] = selectedDate.split('-').map(Number);
-        const date = new Date(year, month - 1, day); // month is 0-based in JS
-        date.setHours(hour, parseInt(minutes), 0);
+          // Create date object from selectedDate string (YYYY-MM-DD)
+          const [year, month, day] = selectedDate.split('-').map(Number);
+          const date = new Date(year, month - 1, day); // month is 0-based in JS
+          date.setHours(hour, parseInt(minutes), 0);
 
-        // Calculate end time (movie duration + 30 min for credits/cleanup)
-        const endDate = new Date(date);
-        const [durationHours, durationMinutes] = movie.duration
-          .match(/(\d+)\s*hours?,\s*(\d+)\s*minutes?/i)
-          ?.slice(1)
-          .map(Number) || [2, 0];
-        
-        endDate.setHours(
-          endDate.getHours() + durationHours,
-          endDate.getMinutes() + durationMinutes + 30
-        );
+          // Calculate end time (movie duration + 30 min for credits/cleanup)
+          const endDate = new Date(date);
+          const [durationHours, durationMinutes] = movie.duration
+            .match(/(\d+)\s*hours?,\s*(\d+)\s*minutes?/i)
+            ?.slice(1)
+            .map(Number) || [2, 0];
+          
+          endDate.setHours(
+            endDate.getHours() + durationHours,
+            endDate.getMinutes() + durationMinutes + 30
+          );
 
-        return {
-          title: `${movie.title} (${screening.screen})`,
-          start: date,
-          end: endDate,
-          extendedProps: {
-            movie,
-            screening
-          },
-          backgroundColor: getMovieColor(movie.rating),
-        };
-      })
-    )
-  );
+          return {
+            title: `${movie.title} (${screening.screen})`,
+            start: date,
+            end: endDate,
+            extendedProps: {
+              movie,
+              screening
+            },
+            backgroundColor: getMovieColor(movie.rating),
+          };
+        })
+      )
+    );
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
