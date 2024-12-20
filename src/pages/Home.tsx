@@ -5,6 +5,7 @@ import OptimizedMovieCalendar from '../components/OptimizedMovieCalendar';
 import { MovieDatabase } from '../types/movie';
 import { MovieVisibilityProvider } from '../contexts/MovieVisibilityContext';
 import MovieFilter from '../components/MovieFilter';
+import ComfortableMovieCalendar from '../components/ComfortableMovieCalendar';
 
 const movieDatabase: MovieDatabase = movieDatabaseJSON;
 
@@ -58,6 +59,11 @@ export default function Home() {
                     />
                     
                     <OptimizedMovieCalendar 
+                        selectedDate={selectedDate}
+                        movies={movies}
+                    />
+
+                    <ComfortableMovieCalendar 
                         selectedDate={selectedDate}
                         movies={movies}
                     />
