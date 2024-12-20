@@ -1,0 +1,40 @@
+name: Update Movie Data
+
+on:
+  schedule:
+    # Runs at 4 AM UTC (midnight EST) every day
+    - cron: '0 4 * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Fetch latest movie data
+        run: node src/scripts/fetch-movies.js
+        
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet src/lib/movie-data.json || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push if changed
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/lib/movie-data.json
+          git commit -m "Update movie data [skip ci]"
+          git push 
