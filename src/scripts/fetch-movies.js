@@ -6,9 +6,15 @@ async function fetchMovieData() {
 	const movieData = {};
 	const baseUrl = 'https://www.marcustheatres.com/theatre-locations/north-shore-cinema-mequon';
 
-	const browser = await chromium.launch();
+	console.log('Launching browser...');
+	const browser = await chromium.launch({
+		args: ['--no-sandbox'] // Required for running in GitHub Actions
+	});
 	const context = await browser.newContext();
 	const page = await context.newPage();
+
+	// Set default timeout
+	page.setDefaultTimeout(5000); // 5 seconds
 
 	const today = new Date();
 
@@ -16,9 +22,34 @@ async function fetchMovieData() {
 		let date = new Date(today);
 		date.setDate(date.getDate() + i);
 		const dateString = date.toISOString().split('T')[0];
+		
+		console.log(`Fetching data for ${dateString}...`);
+		
 		try {
-			await page.goto(`${baseUrl}?Date=${dateString}`);
-			await page.waitForSelector('.movie-showtimes');
+			// Navigate to page and wait for network idle
+			await page.goto(`${baseUrl}?Date=${dateString}`, {
+				waitUntil: 'networkidle'
+			});
+			
+			// Wait for either movie showtimes or "no movies" message
+			try {
+				await Promise.race([
+					page.waitForSelector('.movie-showtimes', { timeout: 5000 }),
+					page.waitForSelector('.no-movies-message', { timeout: 5000 })
+				]);
+			} catch (error) {
+				console.log(`Timeout waiting for movie data on ${dateString}. Skipping...`);
+				continue;
+			}
+
+			// Check if there are any movies
+			const hasMovies = await page.locator('.movie-showtimes').count() > 0;
+			
+			if (!hasMovies) {
+				console.log(`No movies found for ${dateString}`);
+				movieData[dateString] = [];
+				continue;
+			}
 
 			movieData[dateString] = await page.evaluate(() => {
 				const movies = [];
@@ -65,16 +96,30 @@ async function fetchMovieData() {
 				});
 				return movies;
 			});
+			
+			console.log(`Successfully fetched ${movieData[dateString].length} movies for ${dateString}`);
+			
+			// Add a small delay between requests to avoid overwhelming the server
+			await page.waitForTimeout(500);
+
 		} catch (error) {
-			console.error('Error:', error);
+			console.error(`Error fetching data for ${dateString}:`, error);
+			movieData[dateString] = [];
 		}
 	}
+
 	await browser.close();
+	console.log('Browser closed. Writing data to file...');
 
 	fs.writeFileSync(
 		path.join(process.cwd(), 'src/lib/movie-data.json'),
 		JSON.stringify(movieData, null, 2)
 	);
+	
+	console.log('Data written successfully!');
 }
 
-fetchMovieData();
+fetchMovieData().catch(error => {
+	console.error('Fatal error:', error);
+	process.exit(1);
+});
