@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-// import { Movie } from '../types/movie';
 
 interface MovieVisibilityContextType {
   hiddenMovies: Set<string>;
