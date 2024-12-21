@@ -405,7 +405,7 @@ export default function ComfortableMovieCalendar({ selectedDate, movies }: Comfo
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
             <button
                 onClick={() => setIsCalendarVisible(!isCalendarVisible)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="w-full px-6 py-6 text-left flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
             >
                 <h2 className="text-lg font-semibold text-gray-800">Comfortable Schedule</h2>
                 <svg
@@ -422,7 +422,7 @@ export default function ComfortableMovieCalendar({ selectedDate, movies }: Comfo
             <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
                 <div className="space-y-4">
                     {/* Quick Schedule Presets */}
-                    <div className="flex gap-3 overflow-x-auto -mx-3 px-3 py-2">
+                    <div className="flex gap-3 overflow-x-auto -mx-3 px-3">
                         {QUICK_SCHEDULES.map((preset) => (
                             <button
                                 key={preset.label}
