@@ -24,7 +24,7 @@ async function fetchMovieData() {
 
 		const today = new Date();
 
-		for (let i = 0; i < 15; i++) {
+		for (let i = 0; i < 10; i++) {
 			let date = new Date(today);
 			date.setDate(date.getDate() + i);
 			const dateString = date.toISOString().split('T')[0];
@@ -45,12 +45,12 @@ async function fetchMovieData() {
 					// First navigate with just load event
 					await page.goto(`${baseUrl}?Date=${dateString}`, {
 						waitUntil: 'load',
-						timeout: 60000 // 60 second timeout
+						timeout: 10000 // 10 second timeout
 					});
 
 					// Then wait for network to be idle separately
 					try {
-						await page.waitForLoadState('networkidle', { timeout: 5000 });
+						await page.waitForLoadState('networkidle', { timeout: 500 });
 					} catch (error) {
 						console.log(`Network didn't reach idle state for ${dateString}, continuing anyway...`);
 					}
@@ -129,7 +129,7 @@ async function fetchMovieData() {
 					success = true;
 					
 					// Add a small delay between requests
-					await page.waitForTimeout(1000);
+					await page.waitForTimeout(250);
 
 				} catch (error) {
 					retryCount++;
