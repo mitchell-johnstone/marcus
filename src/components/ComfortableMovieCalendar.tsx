@@ -13,8 +13,49 @@ type ComfortableMovieCalendarProps = {
 interface SchedulePreferences {
   includeLunch: boolean;
   includeDinner: boolean;
-  pushRatedR: boolean;
 }
+
+interface QuickSchedulePreset {
+  label: string;
+  description: string;
+  preferences: SchedulePreferences;
+}
+
+// Add preset configurations
+const QUICK_SCHEDULES: QuickSchedulePreset[] = [
+  {
+    label: "Family Day",
+    description: "Perfect for families with kids - includes lunch and early dinner",
+    preferences: {
+      includeLunch: true,
+      includeDinner: true
+    }
+  },
+  {
+    label: "Movie Marathon",
+    description: "Maximum movies, no meal breaks",
+    preferences: {
+      includeLunch: false,
+      includeDinner: false
+    }
+  },
+  {
+    label: "Evening Focus",
+    description: "Concentrates movies after 5 PM, ",
+    preferences: {
+      includeLunch: true,
+      includeDinner: false
+    }
+  },
+  {
+    label: "Dinner Plans",
+    description: "Schedules around dinner time, perfect for dinner and a movie",
+    preferences: {
+      includeLunch: false,
+      includeDinner: true
+    }
+  }
+];
 
 const convertTo24Hour = (time: string): string => {
   const [hours, minutes] = time.replace(/\s*(AM|PM)\s*$/i, '').split(':');
@@ -30,15 +71,15 @@ const convertTo24Hour = (time: string): string => {
 const getMovieColor = (rating: string): string => {
   switch (rating) {
     case 'G':
-      return '#22c55e'; // green-500
+      return '#4ade80'; // green
     case 'PG':
-      return '#3b82f6'; // blue-500
+      return '#60a5fa'; // blue
     case 'PG-13':
-      return '#f59e0b'; // amber-500
+      return '#f59e0b'; // amber
     case 'R':
-      return '#ef4444'; // red-500
+      return '#ef4444'; // red
     default:
-      return '#6b7280'; // gray-500
+      return '#6b7280'; // gray
   }
 };
 
@@ -48,20 +89,207 @@ const renderEventContent = (eventInfo: EventContentArg) => {
   // For meal breaks or events without movie data
   if (!movie) {
     return (
-      <div className="p-2">
-        <div className="font-medium">{eventInfo.event.title}</div>
+      <div className="p-1 text-xs">
+        <div className="font-bold truncate">{eventInfo.event.title}</div>
       </div>
     );
   }
 
   return (
-    <div className={`p-2 ${eventInfo.event.classNames}`}>
-      <div className="font-medium">{eventInfo.event.title}</div>
-      <div className="text-sm opacity-75">
-        {movie.rating} • {movie.duration}
-      </div>
+    <div className="p-1 text-xs">
+      <div className="font-bold truncate">{eventInfo.event.title}</div>
+      <div className="text-gray-600">{movie.rating} • {eventInfo.timeText}</div>
     </div>
   );
+};
+
+// Add to the existing interfaces at the top
+interface ScheduleResult {
+  familyEvents: any[];
+  allEvents: any[];
+}
+
+// Add this helper function at the top level
+const getMovieDurationInMinutes = (duration: string): number => {
+  const match = duration.match(/(\d+)\s*hours?,\s*(\d+)\s*minutes?/i);
+  if (!match) return 120;
+  const [, hours, minutes] = match;
+  return parseInt(hours) * 60 + parseInt(minutes);
+};
+
+// Add these utility functions
+const createMealBlock = (selectedDate: string, startTime: string, title: string) => ({
+  title,
+  start: `${selectedDate}T${startTime}`,
+  end: `${selectedDate}T${addMinutesToTime(startTime, 60)}`,
+  backgroundColor: '#94a3b8', // slate-400
+  display: 'background'
+});
+
+const addMinutesToTime = (time: string, minutes: number): string => {
+  const [hours, mins] = time.split(':').map(Number);
+  const date = new Date(2024, 0, 1, hours, mins);
+  date.setMinutes(date.getMinutes() + minutes);
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:00`;
+};
+
+// Update the generateScheduleVariations function
+const generateScheduleVariations = (
+  movies: Movie[], 
+  selectedDate: string,
+  isMovieVisible: (title: string) => boolean,
+  preferences: SchedulePreferences
+): ScheduleResult[] => {
+  // Create a shuffled copy of the movies array with Fisher-Yates shuffle
+  const shuffledMovies = [...movies].sort(() => Math.random() - 0.5);
+  
+  // Generate one variation with the shuffled movies
+  const familySchedule = optimizeComfortableSchedule(
+    true, 
+    shuffledMovies, 
+    preferences,
+    isMovieVisible,
+    selectedDate,
+    Math.random() // Pass a random seed
+  );
+  
+  const allMoviesSchedule = optimizeComfortableSchedule(
+    false, 
+    shuffledMovies, 
+    preferences,
+    isMovieVisible,
+    selectedDate,
+    Math.random() // Pass a different random seed
+  );
+
+  return [{
+    familyEvents: familySchedule,
+    allEvents: allMoviesSchedule
+  }];
+};
+
+// Move preferences to module scope
+const defaultPreferences: SchedulePreferences = {
+  includeLunch: true,
+  includeDinner: true
+};
+
+// Modify the optimizeComfortableSchedule function to accept preferences
+const optimizeComfortableSchedule = (
+  familyFriendlyOnly: boolean,
+  moviesList: Movie[],
+  prefs: SchedulePreferences = defaultPreferences,
+  isMovieVisible: (title: string) => boolean,
+  selectedDate: string,
+  randomSeed: number = Math.random(),
+  existingSchedule?: any[],
+  ratedRTimes?: Set<string>
+) => {
+  const newEvents: any[] = [];
+  
+  // Add meal blocks
+  if (prefs.includeLunch) {
+    newEvents.push(createMealBlock(selectedDate, '12:00:00', 'Lunch Break'));
+  }
+  if (prefs.includeDinner) {
+    newEvents.push(createMealBlock(selectedDate, '17:30:00', 'Dinner Break'));
+  }
+
+  // Filter movies based on rating and visibility
+  let eligibleMovies = moviesList.filter(m => 
+    isMovieVisible(m.title) && 
+    (familyFriendlyOnly ? 
+      ['G', 'PG', 'PG-13'].includes(m.rating) : 
+      true
+    )
+  );
+
+  // Create intervals
+  let intervals = eligibleMovies.flatMap(movie => {
+    const duration = getMovieDurationInMinutes(movie.duration);
+    return movie.screenings.flatMap(screening =>
+      screening.times.map(time => {
+        const startTime = convertTo24Hour(time);
+        const start = new Date(`${selectedDate}T${startTime}`);
+        const end = new Date(start.getTime() + duration * 60000);
+        return { start, end, movie, screening, time };
+      })
+    );
+  });
+
+  // If we have an existing schedule, try to match those times first
+  if (existingSchedule) {
+    intervals.sort((a, b) => {
+      const aInExisting = existingSchedule.some(event => 
+        event.extendedProps?.movie?.title === a.movie.title &&
+        event.start === a.start.toISOString()
+      );
+      const bInExisting = existingSchedule.some(event => 
+        event.extendedProps?.movie?.title === b.movie.title &&
+        event.start === b.start.toISOString()
+      );
+      
+      if (aInExisting && !bInExisting) return -1;
+      if (!aInExisting && bInExisting) return 1;
+      return a.start.getTime() - b.start.getTime();
+    });
+  } else {
+    // Original sorting logic for first schedule
+    intervals.sort((a, b) => {
+      const timeA = a.start.getTime();
+      const timeB = b.start.getTime();
+      if (Math.abs(timeA - timeB) <= 30 * 60 * 1000) {
+        return randomSeed - 0.5;
+      }
+      return timeA - timeB;
+    });
+  }
+
+  // Rest of the scheduling logic remains the same...
+  const scheduledMovies = new Set<string>();
+  const scheduledTimeSlots = new Set<string>();
+  let lastEndTime = new Date(`${selectedDate}T09:00:00`);
+
+  intervals.forEach(interval => {
+    if (scheduledMovies.has(interval.movie.title)) return;
+    if (interval.start < lastEndTime) return;
+
+    const timeKey = `${interval.start.toISOString()}-${interval.end.toISOString()}`;
+    if (scheduledTimeSlots.has(timeKey)) return;
+
+    // For family schedule, skip times where R-rated movies are showing
+    if (familyFriendlyOnly && ratedRTimes?.has(timeKey)) return;
+
+    // Skip if this movie is already scheduled at a different time in the other schedule
+    if (familyFriendlyOnly && existingSchedule?.some(event => 
+      event.extendedProps?.movie?.title === interval.movie.title &&
+      event.start !== interval.start.toISOString()
+    )) return;
+
+    const conflictsWithMeals = 
+      (prefs.includeLunch && 
+        interval.start <= new Date(`${selectedDate}T13:00:00`) && 
+        interval.end >= new Date(`${selectedDate}T12:00:00`)) ||
+      (prefs.includeDinner && 
+        interval.start <= new Date(`${selectedDate}T18:30:00`) && 
+        interval.end >= new Date(`${selectedDate}T17:30:00`));
+
+    if (conflictsWithMeals) return;
+
+    newEvents.push({
+      title: `${interval.movie.title} (${interval.screening.screen})`,
+      start: interval.start.toISOString(),
+      end: interval.end.toISOString(),
+      backgroundColor: getMovieColor(interval.movie.rating),
+      extendedProps: { movie: interval.movie }
+    });
+
+    scheduledMovies.add(interval.movie.title);
+    scheduledTimeSlots.add(timeKey);
+    lastEndTime = interval.end;
+  });
+
+  return newEvents;
 };
 
 export default function ComfortableMovieCalendar({ selectedDate, movies }: ComfortableMovieCalendarProps) {
@@ -71,11 +299,8 @@ export default function ComfortableMovieCalendar({ selectedDate, movies }: Comfo
   const { isMovieVisible } = useMovieVisibility();
   const [familyEvents, setFamilyEvents] = useState<any[]>([]);
   const [allEvents, setAllEvents] = useState<any[]>([]);
-  const [preferences, setPreferences] = useState<SchedulePreferences>({
-    includeLunch: true,
-    includeDinner: true,
-    pushRatedR: true
-  });
+  const [preferences, setPreferences] = useState<SchedulePreferences>(defaultPreferences);
+  const [currentVariationIndex, setCurrentVariationIndex] = useState(0);
 
   useEffect(() => {
     [familyCalendarRef, allMoviesCalendarRef].forEach(ref => {
@@ -87,182 +312,175 @@ export default function ComfortableMovieCalendar({ selectedDate, movies }: Comfo
   }, [selectedDate]);
 
   useEffect(() => {
-    const familySchedule = optimizeComfortableSchedule(true);
-    const allMoviesSchedule = optimizeComfortableSchedule(false);
+    // Generate all-movies schedule first, prioritizing R-rated movies
+    const allMoviesSchedule = optimizeComfortableSchedule(
+      false, 
+      movies, 
+      preferences, 
+      isMovieVisible,
+      selectedDate
+    );
+    
+    // Filter out the times where R-rated movies are scheduled
+    const ratedRTimes = new Set(
+      allMoviesSchedule
+        .filter(event => event.extendedProps?.movie?.rating === 'R')
+        .map(event => `${event.start}-${event.end}`)
+    );
+
+    // Generate family schedule avoiding R-rated movie times
+    const familySchedule = optimizeComfortableSchedule(
+      true, 
+      movies.filter(m => ['G', 'PG', 'PG-13'].includes(m.rating)), 
+      preferences, 
+      isMovieVisible,
+      selectedDate,
+      Math.random(),
+      allMoviesSchedule,
+      ratedRTimes
+    );
+    
     setFamilyEvents(familySchedule);
     setAllEvents(allMoviesSchedule);
   }, [selectedDate, movies, preferences, isMovieVisible]);
 
-  // Function to calculate movie duration in minutes
-  const getMovieDurationInMinutes = (duration: string): number => {
-    const match = duration.match(/(\d+)\s*hours?,\s*(\d+)\s*minutes?/i);
-    if (!match) return 120;
-    const [, hours, minutes] = match;
-    return parseInt(hours) * 60 + parseInt(minutes);
-  };
-
-  const createMealBlock = (startTime: string, title: string) => ({
-    title,
-    start: `${selectedDate}T${startTime}`,
-    end: `${selectedDate}T${addMinutesToTime(startTime, 60)}`,
-    backgroundColor: '#94a3b8', // slate-400
-    display: 'background'
-  });
-
-  const addMinutesToTime = (time: string, minutes: number): string => {
-    const [hours, mins] = time.split(':').map(Number);
-    const date = new Date(2024, 0, 1, hours, mins);
-    date.setMinutes(date.getMinutes() + minutes);
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:00`;
-  };
-
-  // Helper function to check if a time slot conflicts with existing movies
-  const conflictsWithExisting = (startTime: string, endTime: string, currentEvents: any[]) => {
-    const start = new Date(`${selectedDate}T${startTime}`);
-    const end = new Date(`${selectedDate}T${endTime}`);
-
-    // Find all overlapping movies at this time
-    const overlappingMovies = currentEvents.filter(event => {
-      if (event.display === 'background') return false; // Skip meal times
-      
-      const eventStart = new Date(event.start);
-      const eventEnd = new Date(event.end);
-      
-      return !(end <= eventStart || start >= eventEnd);
-    });
-
-    return overlappingMovies.length > 0;
-  };
-
-  const optimizeComfortableSchedule = (familyFriendlyOnly: boolean) => {
-    const newEvents: any[] = [];
+  const handleNextVariation = () => {
+    // Always generate a new schedule when clicking next
+    const newVariation = generateScheduleVariations(
+      movies,
+      selectedDate,
+      isMovieVisible,
+      preferences
+    )[0];
     
-    // Add meal blocks first
-    if (preferences.includeLunch) {
-      newEvents.push(createMealBlock('12:00:00', 'Lunch Break'));
+    if (newVariation) {
+      setFamilyEvents(newVariation.familyEvents);
+      setAllEvents(newVariation.allEvents);
+      setCurrentVariationIndex(prev => prev + 1);
     }
-    if (preferences.includeDinner) {
-      newEvents.push(createMealBlock('17:30:00', 'Dinner Break'));
+  };
+
+  const handleShuffle = () => {
+    // Don't reset the counter, just increment it like handleNextVariation does
+    const newVariation = generateScheduleVariations(
+      movies,
+      selectedDate,
+      isMovieVisible,
+      preferences
+    )[0];
+    
+    if (newVariation) {
+      setFamilyEvents(newVariation.familyEvents);
+      setAllEvents(newVariation.allEvents);
+      setCurrentVariationIndex(prev => prev + 1); // Increment instead of resetting
     }
-
-    let intervals: Array<{
-      start: Date,
-      end: Date,
-      movie: Movie,
-      screening: { screen: string, times: string[] },
-      time: string
-    }> = [];
-
-    // Filter movies based on rating
-    const filteredMovies = movies.filter(m => {
-      const isVisible = isMovieVisible(m.title);
-      const isFamilyFriendly = ['G', 'PG', 'PG-13'].includes(m.rating);
-      return isVisible && (familyFriendlyOnly ? isFamilyFriendly : true);
-    });
-
-    // Create all possible intervals
-    filteredMovies.forEach(movie => {
-      const duration = getMovieDurationInMinutes(movie.duration);
-      
-      movie.screenings.forEach(screening => {
-        screening.times.forEach(time => {
-          const startTime = convertTo24Hour(time);
-          const start = new Date(`${selectedDate}T${startTime}`);
-          const end = new Date(start.getTime() + duration * 60000);
-          
-          intervals.push({ start, end, movie, screening, time });
-        });
-      });
-    });
-
-    // Sort intervals by start time to try to align movies across calendars
-    intervals.sort((a, b) => a.start.getTime() - b.start.getTime());
-
-    // Keep track of selected movies and last end time
-    const selectedMovies = new Set<string>();
-    let lastEndTime = new Date(`${selectedDate}T09:00:00`);
-
-    intervals.forEach(interval => {
-      if (selectedMovies.has(interval.movie.title)) return;
-      
-      const conflictsWithMeals = preferences.includeLunch && 
-        interval.start <= new Date(`${selectedDate}T13:00:00`) && 
-        interval.end >= new Date(`${selectedDate}T12:00:00`) ||
-        preferences.includeDinner && 
-        interval.start <= new Date(`${selectedDate}T18:30:00`) && 
-        interval.end >= new Date(`${selectedDate}T17:30:00`);
-
-      if (interval.start >= lastEndTime && !conflictsWithMeals) {
-        newEvents.push({
-          title: `${interval.movie.title} (${interval.screening.screen})`,
-          start: interval.start.toISOString(),
-          end: interval.end.toISOString(),
-          backgroundColor: getMovieColor(interval.movie.rating),
-          extendedProps: { movie: interval.movie }
-        });
-        
-        selectedMovies.add(interval.movie.title);
-        lastEndTime = interval.end;
-      }
-    });
-
-    return newEvents;
   };
 
   // Rest of the component (UI, controls, etc.)
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
-      <div 
+      <button 
         onClick={() => setIsCalendarVisible(!isCalendarVisible)}
-        className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+        className="w-full px-6 py-4 text-left flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">Comfortable Schedule</h3>
-          <div className="text-gray-500">
-            {isCalendarVisible ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            )}
-          </div>
-        </div>
-        <div 
-          onClick={(e) => e.stopPropagation()} 
-          className="flex flex-wrap gap-4 items-center"
+        <h2 className="text-lg font-semibold text-gray-800">Comfortable Schedule</h2>
+        <svg 
+          className={`w-5 h-5 transform transition-transform ${isCalendarVisible ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
         >
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.includeLunch}
-              onChange={e => setPreferences(p => ({ ...p, includeLunch: e.target.checked }))}
-              className="rounded text-blue-600"
-            />
-            <span>Include Lunch Break</span>
-          </label>
-          
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.includeDinner}
-              onChange={e => setPreferences(p => ({ ...p, includeDinner: e.target.checked }))}
-              className="rounded text-blue-600"
-            />
-            <span>Include Dinner Break</span>
-          </label>
-          
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.pushRatedR}
-              onChange={e => setPreferences(p => ({ ...p, pushRatedR: e.target.checked }))}
-              className="rounded text-blue-600"
-            />
-            <span>Push R-Rated Movies Later</span>
-          </label>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Update the controls section styling */}
+      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="space-y-4">
+          {/* Quick Schedule Presets */}
+          <div className="flex gap-3 overflow-x-auto -mx-3 px-3 py-2">
+            {QUICK_SCHEDULES.map((preset) => (
+              <button
+                key={preset.label}
+                onClick={() => setPreferences(preset.preferences)}
+                className="relative inline-flex items-center px-4 py-2 rounded-md
+                           bg-white border border-gray-200 shadow-sm
+                           hover:bg-gray-50 hover:border-gray-300
+                           active:bg-gray-100 
+                           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500
+                           transition-all duration-200
+                           group whitespace-nowrap flex-shrink-0
+                           my-1"
+                title={preset.description}
+              >
+                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                  {preset.label}
+                </span>
+                {preset.label === "Movie Marathon" && (
+                  <span className="ml-2">🎬</span>
+                )}
+                {preset.label === "Family Day" && (
+                  <span className="ml-2">👨‍👩‍👧‍👦</span>
+                )}
+                {preset.label === "Evening Focus" && (
+                  <span className="ml-2">🌙</span>
+                )}
+                {preset.label === "Dinner Plans" && (
+                  <span className="ml-2">🍽️</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom Preferences */}
+          <div className="flex flex-wrap gap-3 text-sm">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={preferences.includeLunch}
+                onChange={e => setPreferences(p => ({ ...p, includeLunch: e.target.checked }))}
+                className="rounded text-blue-600 w-4 h-4"
+              />
+              <span>Include Lunch Break</span>
+            </label>
+            
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={preferences.includeDinner}
+                onChange={e => setPreferences(p => ({ ...p, includeDinner: e.target.checked }))}
+                className="rounded text-blue-600 w-4 h-4"
+              />
+              <span>Include Dinner Break</span>
+            </label>
+          </div>
+
+          {/* Variation Controls */}
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={handleShuffle}
+              className="px-3 py-1.5 bg-purple-500 text-white rounded-md shadow-sm 
+                       hover:bg-purple-600 focus:outline-none focus:ring-2 
+                       focus:ring-purple-500 focus:ring-offset-2 transition-colors text-sm"
+            >
+              🎲 Shuffle Schedules
+            </button>
+            
+            {currentVariationIndex > 0 && (
+              <button
+                onClick={handleNextVariation}
+                className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-md shadow-sm 
+                          hover:bg-purple-200 focus:outline-none focus:ring-2 
+                          focus:ring-purple-500 focus:ring-offset-2 transition-colors text-sm"
+              >
+                Next Variation #{currentVariationIndex + 1}
+              </button>
+            )}
+            
+            <span className="text-sm text-gray-500">
+              {familyEvents.length + allEvents.length} movies total
+            </span>
+          </div>
         </div>
       </div>
 
