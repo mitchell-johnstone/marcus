@@ -8,43 +8,48 @@ async function fetchMovieData() {
 
 	console.log('Launching browser...');
 	const browser = await chromium.launch({
-		args: ['--no-sandbox'] // Required for running in GitHub Actions
+		headless: true,
+		chromiumSandbox: false // Required for running in GitHub Actions
 	});
-	const context = await browser.newContext();
-	const page = await context.newPage();
 
-	// Set shorter timeout for element selectors
-	page.setDefaultTimeout(5000);
+	try {
+		const context = await browser.newContext({
+			viewport: { width: 1280, height: 720 },
+			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+		});
+		const page = await context.newPage();
 
-	const today = new Date();
+		// Set shorter timeout for element selectors
+		page.setDefaultTimeout(5000);
 
-	for (let i = 0; i < 15; i++) {
-		let date = new Date(today);
-		date.setDate(date.getDate() + i);
-		const dateString = date.toISOString().split('T')[0];
-		
-		console.log(`Fetching data for ${dateString}...`);
-		
-		// Try up to 3 times for each date
-		for (let attempt = 1; attempt <= 3; attempt++) {
+		const today = new Date();
+
+		for (let i = 0; i < 15; i++) {
+			let date = new Date(today);
+			date.setDate(date.getDate() + i);
+			const dateString = date.toISOString().split('T')[0];
+			
+			console.log(`Fetching data for ${dateString}...`);
+			
 			try {
-				// Navigate to page with longer timeout for initial load
 				await page.goto(`${baseUrl}?Date=${dateString}`, {
 					waitUntil: 'networkidle',
-					timeout: 30000 // 30 second timeout for navigation
+					timeout: 30000
 				});
 				
 				// Wait for either movie showtimes or "no movies" message
-				try {
-					await Promise.race([
-						page.waitForSelector('.movie-showtimes', { timeout: 5000 }),
-						page.waitForSelector('.no-movies-message', { timeout: 5000 })
-					]);
-				} catch (error) {
-					if (attempt === 3) {
-						console.log(`Timeout waiting for movie data on ${dateString} after ${attempt} attempts. Skipping...`);
-						movieData[dateString] = [];
-					}
+				const hasContent = await Promise.race([
+					page.waitForSelector('.movie-showtimes', { timeout: 5000 })
+						.then(() => true)
+						.catch(() => false),
+					page.waitForSelector('.no-movies-message', { timeout: 5000 })
+						.then(() => true)
+						.catch(() => false)
+				]);
+
+				if (!hasContent) {
+					console.log(`No content found for ${dateString}`);
+					movieData[dateString] = [];
 					continue;
 				}
 
@@ -54,20 +59,18 @@ async function fetchMovieData() {
 				if (!hasMovies) {
 					console.log(`No movies found for ${dateString}`);
 					movieData[dateString] = [];
-					break; // Success - no need to retry
+					continue;
 				}
 
-				movieData[dateString] = await page.evaluate(() => {
+				const movies = await page.evaluate(() => {
 					const movies = [];
 					document.querySelectorAll('.movie-showtimes').forEach((element) => {
-						// get movie details
 						const movieDetails = element.querySelector('.movie-showtimes__info--details');
 						const rating = movieDetails?.querySelector('.rating-link')?.textContent?.trim() || '';
 						const detailsText = movieDetails?.textContent?.trim() || '';
 						const duration = detailsText.match(/(\d+)\s*hours?,\s*(\d+)\s*minutes/)?.[0] || '';
 						const genres = detailsText.split('|')[2]?.trim() || '';
 
-						// Get screenings data
 						const screenings = [];
 						element.querySelectorAll('.movie-showtimes__screen-type').forEach((screenType) => {
 							const screenTypeElement = screenType.querySelector('.screen-type__text');
@@ -89,51 +92,46 @@ async function fetchMovieData() {
 							}
 						});
 
-						const movie = {
+						movies.push({
 							title: element.querySelector('.movie-title')?.textContent?.trim() || '',
-							poster:
-								element.querySelector('.movie-info__poster-img')?.getAttribute('data-src') || '',
-							rating: rating,
-							duration: duration,
-							genres: genres,
-							screenings: screenings
-						};
-						movies.push(movie);
+							poster: element.querySelector('.movie-info__poster-img')?.getAttribute('data-src') || '',
+							rating,
+							duration,
+							genres,
+							screenings
+						});
 					});
 					return movies;
 				});
+
+				movieData[dateString] = movies;
+				console.log(`Successfully fetched ${movies.length} movies for ${dateString}`);
 				
-				console.log(`Successfully fetched ${movieData[dateString].length} movies for ${dateString}`);
-				
-				// Add a small delay between requests to avoid overwhelming the server
-				await page.waitForTimeout(500);
-				
-				break; // Success - no need to retry
+				// Add a small delay between requests
+				await page.waitForTimeout(1000);
 
 			} catch (error) {
-				if (attempt === 3) {
-					console.error(`Error fetching data for ${dateString} after ${attempt} attempts:`, error);
-					movieData[dateString] = [];
-				} else {
-					console.log(`Attempt ${attempt} failed for ${dateString}, retrying...`);
-					await page.waitForTimeout(1000 * attempt); // Increasing delay between retries
-				}
+				console.error(`Error fetching data for ${dateString}:`, error);
+				movieData[dateString] = [];
 			}
 		}
+
+	} finally {
+		await browser.close();
+		console.log('Browser closed. Writing data to file...');
 	}
 
-	await browser.close();
-	console.log('Browser closed. Writing data to file...');
+	const outputDir = path.join(process.cwd(), 'src/lib');
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdirSync(outputDir, { recursive: true });
+	}
 
 	fs.writeFileSync(
-		path.join(process.cwd(), 'src/lib/movie-data.json'),
+		path.join(outputDir, 'movie-data.json'),
 		JSON.stringify(movieData, null, 2)
 	);
 	
 	console.log('Data written successfully!');
 }
 
-fetchMovieData().catch(error => {
-	console.error('Fatal error:', error);
-	process.exit(1);
-});
+fetchMovieData().catch(console.error);
