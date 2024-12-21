@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
           
       - name: Install dependencies
         run: npm ci
@@ -31,4 +32,19 @@ jobs:
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add src/lib/movie-data.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update movie data" && git push) 
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update movie data" && git push)
+
+      - name: Build and Deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          npm run build
+          # Navigate to dist folder
+          cd dist
+          # Initialize git and push to gh-pages branch
+          git init
+          git add -A
+          git commit -m "Deploy to GitHub Pages"
+          git push -f https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:gh-pages
